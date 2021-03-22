@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
+const { default: slugify } = require('slugify');
 
 const BootcampSchema = new mongoose.Schema({
   name: {
     type: String,
-    require: [true, 'Please add a name'],
+    required: [true, 'Please add a name'],
     unique: true,
     trim: true,
     maxLength: [50, 'Name cannot be more than 50 characters'],
@@ -11,7 +12,7 @@ const BootcampSchema = new mongoose.Schema({
   slug: String,
   description: {
     type: String,
-    require: [true, 'Please add a description'],
+    required: [true, 'Please add a description'],
     maxLength: [500, 'Description cannot be more than 500 characters'],
   },
   website: {
@@ -34,7 +35,7 @@ const BootcampSchema = new mongoose.Schema({
   },
   address: {
     type: String,
-    require: [true, 'Please add an address'],
+    required: [true, 'Please add an address'],
   },
   location: {
     // GeoJSON point
@@ -98,4 +99,10 @@ const BootcampSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('bootcamp', BootcampSchema);
+// Create Bootcamp slug from the name
+BootcampSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+module.exports = mongoose.model('Bootcamp', BootcampSchema);
